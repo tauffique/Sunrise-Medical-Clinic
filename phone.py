@@ -1,6 +1,7 @@
 """Phone line: Twilio calls the clinic and the chatbot answers by voice (Phase 1, English)."""
 import difflib
 import html
+import re
 import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -75,8 +76,24 @@ def _fix_speech(speech, doctors):
     return " ".join(words)
 
 
+def _voice_prompts(text):
+    """Turns on-screen instructions (calendar, slots below) into things a caller can say."""
+    out = []
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        low = sentence.lower()
+        if "calendar" in low or "below" in low:
+            if "date" in low or "day" in low:
+                out.append("Please say a date, for example tuesday, tomorrow, or 2026-11-22.")
+            elif "time" in low or "slot" in low:
+                out.append("Please say a time, for example 10 o'clock.")
+        else:
+            out.append(sentence)
+    return " ".join(out)
+
+
 def _voice_text(text):
     """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
+    text = _voice_prompts(text)
     lines = text.splitlines()
     bullets = [line for line in lines if line.strip().startswith("•")]
     if len(bullets) > 3:
