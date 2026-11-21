@@ -5,7 +5,7 @@
     <summary>
       <span class="status-dot" aria-hidden="true"></span>
       <span class="status-text">Online</span>
-      <strong>{{ staff.email }}</strong>
+      <strong>{{ staff.name or 'Staff' }}</strong>
       <span class="role-badge">{{ staff.role }}</span>
     </summary>
     <div class="staff-menu-panel">
@@ -16,6 +16,7 @@
       </form>
     </div>
   </details>
+  <script src="{{ url_for('static', filename='staff-menu.js') }}" defer></script>
 {% endblock %}
 {% block content %}
 <section class="container wide">
