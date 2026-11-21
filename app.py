@@ -17,6 +17,7 @@ from clinic import Clinic
 from config import Config
 import accounts
 from notifications import notify_staff_new_request
+from phone import bp as phone_bp
 from crypto import Vault
 from i18n import t
 from llm import LLMClient
@@ -87,6 +88,7 @@ def create_app(overrides=None, llm=_AUTO):
     app.extensions.update(store=store, vault=vault, clinic=clinic, bus=bus, bot=bot, limiter=RateLimiter())
     app.register_blueprint(web_bp)
     app.register_blueprint(staff_bp)
+    app.register_blueprint(phone_bp)
 
     @app.after_request
     def _security_headers(response):
