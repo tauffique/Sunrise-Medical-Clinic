@@ -92,9 +92,23 @@ def _voice_prompts(text):
     return " ".join(out)
 
 
+PHONE_RE = re.compile(r"\+\d[\d ]{7,}\d|\b0\d[\d ]{8,}\d")
+
+
+def _spell_numbers(text):
+    """Reads phone numbers digit by digit, so 0174 6344155 is not spoken as one large number."""
+    def spell(match):
+        number = match.group(0).strip()
+        digits = re.sub(r"\D", "", number)
+        prefix = "plus " if number.startswith("+") else ""
+        return prefix + " ".join(digits)
+    return PHONE_RE.sub(spell, text)
+
+
 def _voice_text(text):
     """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
     text = _voice_prompts(text)
+    text = _spell_numbers(text)
     lines = text.splitlines()
     bullets = [line for line in lines if line.strip().startswith("•")]
     if len(bullets) > 3:
