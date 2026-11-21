@@ -219,6 +219,8 @@ def answer():
 @bp.route("/token", methods=["GET"])
 def browser_token():
     """Gives the test-call page a short-lived Twilio token. Calls connect to /phone/voice."""
+    if not current_app.extensions["limiter"].allow(f"phone-token:{request.remote_addr}", 20, 3600):
+        return jsonify(error="Too many test calls. Please try again later."), 429
     account_sid = os.environ.get("TWILIO_ACCOUNT_SID", "")
     api_key = os.environ.get("TWILIO_API_KEY_SID", "")
     api_secret = os.environ.get("TWILIO_API_KEY_SECRET", "")
