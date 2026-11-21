@@ -3,7 +3,7 @@ import difflib
 import html
 import re
 import logging
-from datetime import datetime
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 import os
@@ -105,8 +105,59 @@ def _spell_numbers(text):
     return PHONE_RE.sub(spell, text)
 
 
+SPEECH_TIME_RE = re.compile(r"\b(\d{1,2})(?::(\d{2}))?\s*(am|pm|o'?clock)\b", re.I)
+ISO_DATE_RE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+FREE_TIMES_RE = re.compile(r"Free times on ([^:]+): ([0-9:, ]+)\.")
+
+
+def _speech_time(speech):
+    """Turns '10 o'clock', '3 pm' or '10:30 am' into 24-hour HH:MM, so the booking step understands it."""
+    match = SPEECH_TIME_RE.search(speech)
+    if not match:
+        return speech
+    hour = int(match.group(1))
+    minute = int(match.group(2) or 0)
+    suffix = match.group(3).lower()
+    if suffix == "pm" and hour < 12:
+        hour += 12
+    elif suffix == "am" and hour == 12:
+        hour = 0
+    elif suffix.startswith("o") and hour < 8:
+        hour += 12
+    return speech[:match.start()] + f"{hour:02d}:{minute:02d}" + speech[match.end():]
+
+
+def _spoken_clock(value):
+    hour, minute = value.split(":")
+    return f"{int(hour)} o'clock" if minute == "00" else f"{int(hour)}:{minute}"
+
+
+def _short_times(text):
+    """Reads only the first three free times, then asks the caller to choose."""
+    def shorten(match):
+        times = [t.strip() for t in match.group(2).split(",") if t.strip()]
+        if len(times) <= 3:
+            return match.group(0)
+        spoken = ", ".join(_spoken_clock(t) for t in times[:3])
+        return f"Free times on {match.group(1)} include {spoken}, and more. Which time would you like?"
+    return FREE_TIMES_RE.sub(shorten, text)
+
+
+def _spoken_dates(text):
+    """Reads 2026-11-24 as 'Tuesday, November 24'."""
+    def speak(match):
+        try:
+            day = date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+        except ValueError:
+            return match.group(0)
+        return f"{day:%A}, {day:%B} {day.day}"
+    return ISO_DATE_RE.sub(speak, text)
+
+
 def _voice_text(text):
     """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
+    text = _short_times(text)
+    text = _spoken_dates(text)
     text = _voice_prompts(text)
     text = _spell_numbers(text)
     lines = text.splitlines()
@@ -136,6 +187,7 @@ def answer():
     if any(word in speech.lower() for word in THANKS_WORDS):
         return _twiml(_listen("You're welcome. Is there anything else I can help with?"))
     speech = _fix_speech(speech, current_app.extensions["clinic"].doctors)
+    speech = _speech_time(speech)
     try:
         result = current_app.extensions["bot"].reply(call_id, speech, lang="en")
         text = result["reply"] if isinstance(result, dict) else getattr(result, "reply", "")
