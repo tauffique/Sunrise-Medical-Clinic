@@ -2,60 +2,70 @@
 {% block title %}Staff accounts · {{ clinic_name }}{% endblock %}
 {% block content %}
 <h1>Staff accounts</h1>
+<p class="muted">Create accounts for reception and doctors, or reset a password. New and reset accounts choose their own password at the next sign-in.</p>
 
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 
 {% if new_account %}
 <div class="notice">
   {% if new_account.reset %}Password reset for{% else %}Account created for{% endif %}
-  <strong>{{ new_account.email }}</strong>.
-  Temporary password (shown once, copy it now): <code>{{ new_account.password }}</code><br>
-  They must choose a new password at their next sign-in.
+  <strong>{{ new_account.email }}</strong>.<br>
+  Temporary password (shown once, copy it now): <code>{{ new_account.password }}</code>
 </div>
 {% endif %}
 
-<h2>Create account</h2>
-<form method="post" action="{{ url_for('staff.accounts_admin') }}" class="stack">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <label>Name <input name="name" required maxlength="80"></label>
-  <label>Email <input name="email" type="email" required></label>
-  <label>Role
-    <select name="role">
-      <option value="reception">Reception</option>
-      <option value="doctor">Doctor</option>
-    </select>
-  </label>
-  <label>Doctor ID (doctor accounts only) <input name="doctor_id" placeholder="dr-fischer"></label>
-  <button type="submit">Create account</button>
-</form>
+<section class="card">
+  <h2>Create account</h2>
+  <form method="post" action="{{ url_for('staff.accounts_admin') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid">
+      <label>Name <input name="name" required maxlength="80"></label>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Role
+        <select name="role">
+          <option value="reception">Reception</option>
+          <option value="doctor">Doctor</option>
+        </select>
+      </label>
+      <label>Doctor ID (doctor accounts only) <input name="doctor_id" placeholder="dr-fischer"></label>
+      <div class="full">
+        <button type="submit">Create account</button>
+      </div>
+    </div>
+  </form>
+</section>
 
-<h2>Accounts</h2>
-<table>
-  <thead>
-    <tr><th>Name</th><th>Email</th><th>Role</th><th>Doctor ID</th><th>Status</th><th></th></tr>
-  </thead>
-  <tbody>
-  {% for u in staff_list %}
-    <tr>
-      <td>{{ u['name'] or '—' }}</td>
-      <td>{{ u['email'] }}</td>
-      <td>{{ u['role'] }}</td>
-      <td>{{ u['doctor_id'] or '' }}</td>
-      <td>
-        {% if not u['active'] %}Disabled
-        {% elif u['must_change_password'] %}Must change password
-        {% else %}Active{% endif %}
-      </td>
-      <td>
-        <form method="post" action="{{ url_for('staff.reset_account', user_id=u['id']) }}" class="inline">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="link-btn">Reset password</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<section class="card">
+  <h2>Accounts</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Role</th><th>Doctor ID</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+      {% for u in staff_list %}
+        <tr>
+          <td>{{ u['name'] or '—' }}</td>
+          <td>{{ u['email'] }}</td>
+          <td><span class="pill">{{ u['role'] }}</span></td>
+          <td>{{ u['doctor_id'] or '' }}</td>
+          <td>
+            {% if not u['active'] %}Disabled
+            {% elif u['must_change_password'] %}Must change password
+            {% else %}Active{% endif %}
+          </td>
+          <td>
+            <form method="post" action="{{ url_for('staff.reset_account', user_id=u['id']) }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="link-btn">Reset password</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 
-<p><a href="{{ url_for('staff.dashboard') }}">Back to appointments</a></p>
+<p><a href="{{ url_for('staff.dashboard') }}">← Back to appointments</a></p>
 {% endblock %}
