@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Staff sign-in · {{ clinic_name }}{% endblock %}
+{% block nav %}{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Staff sign-in</h1>
+  {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" action="{{ url_for('staff.login') }}" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Email
+      <input type="email" name="email" autocomplete="username" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</section>
+{% endblock %}

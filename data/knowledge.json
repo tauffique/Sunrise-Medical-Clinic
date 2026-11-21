@@ -1,0 +1,86 @@
+[
+  {
+    "id": "hours",
+    "type": "faq",
+    "title": "Opening hours",
+    "keywords": ["hours", "open", "opening", "closed", "weekend", "holiday", "öffnungszeiten", "geöffnet", "sprechzeiten", "wochenende", "feiertag"],
+    "text": "Sunrise Medical Clinic is open Monday to Friday from 09:00 to 17:00. We are closed on weekends and public holidays.",
+    "text_de": "Die Sunrise Medical Clinic ist von Montag bis Freitag von 9:00 bis 17:00 Uhr geöffnet. Am Wochenende und an Feiertagen bleibt die Praxis geschlossen."
+  },
+  {
+    "id": "location",
+    "type": "faq",
+    "title": "Address and directions",
+    "keywords": ["address", "location", "where", "directions", "parking", "find", "adresse", "wo", "anfahrt", "parken", "parkplatz", "finden"],
+    "text": "We are at Hauptstraße 1, 12345 Musterstadt. Parking is available in the street behind the building.",
+    "text_de": "Wir befinden uns in der Hauptstraße 1, 12345 Musterstadt. Parkplätze finden Sie in der Straße hinter dem Gebäude."
+  },
+  {
+    "id": "insurance",
+    "type": "faq",
+    "title": "Insurance and payment",
+    "keywords": ["insurance", "payment", "pay", "cost", "price", "fee", "private", "statutory", "versicherung", "bezahlen", "kosten", "gebühr", "gesetzlich", "privat", "versichertenkarte"],
+    "text": "We accept statutory and private health insurance. Please bring your insurance card to your first visit.",
+    "text_de": "Wir behandeln gesetzlich und privat Versicherte. Bitte bringen Sie zum ersten Termin Ihre Versichertenkarte mit."
+  },
+  {
+    "id": "cancellation",
+    "type": "faq",
+    "title": "Cancelling or rescheduling",
+    "keywords": ["cancel", "reschedule", "change", "move", "postpone", "absagen", "stornieren", "verschieben", "ändern", "umbuchen"],
+    "text": "Please cancel or reschedule at least 24 hours before your appointment by replying to the confirmation message or calling the front desk. You can also do it here in the chat with your reference number.",
+    "text_de": "Bitte sagen Sie Ihren Termin mindestens 24 Stunden vorher ab oder verlegen Sie ihn, indem Sie auf die Bestätigung antworten oder die Praxis anrufen. Sie können das auch hier im Chat mit Ihrer Referenznummer tun."
+  },
+  {
+    "id": "prescriptions",
+    "type": "faq",
+    "title": "Prescription refills",
+    "keywords": ["prescription", "refill", "medication", "repeat", "pharmacy", "rezept", "rezeptverlängerung", "medikament", "medikamente", "apotheke", "folgerezept"],
+    "text": "For prescription refills, contact the front desk with the medication name and your pharmacy. Please do not wait until your supply runs out.",
+    "text_de": "Für ein Folgerezept wenden Sie sich bitte mit dem Namen des Medikaments und Ihrer Apotheke an den Empfang. Warten Sie nicht, bis Ihr Vorrat aufgebraucht ist."
+  },
+  {
+    "id": "emergency",
+    "type": "emergency",
+    "title": "Medical emergencies",
+    "keywords": ["emergency", "ambulance", "unconscious", "bleeding", "stroke", "collapse", "notfall", "krankenwagen", "bewusstlos", "blutung", "schlaganfall", "zusammenbruch"],
+    "text": "If someone may be having a medical emergency, call 112 right away. Do not wait for an appointment.",
+    "text_de": "Wenn jemand einen medizinischen Notfall haben könnte, rufen Sie sofort 112 an. Warten Sie nicht auf einen Termin."
+  },
+  {
+    "id": "general-practice",
+    "type": "specialty",
+    "specialty": "General Practice",
+    "title": "General practice",
+    "keywords": ["fever", "cold", "flu", "cough", "sore throat", "headache", "headaches", "fatigue", "tired", "checkup", "vaccination", "infection", "sick", "ill", "fieber", "erkältung", "grippe", "husten", "halsschmerzen", "kopfschmerzen", "kopfschmerz", "müde", "erschöpfung", "impfung", "infekt", "krank", "vorsorge", "check-up"],
+    "text": "General practice is the best first stop for common illnesses such as colds, flu, fever, cough, sore throat, headaches, and tiredness, as well as routine check-ups and vaccinations.",
+    "text_de": "Die Allgemeinmedizin ist die beste erste Anlaufstelle bei häufigen Erkrankungen wie Erkältung, Grippe, Fieber, Husten, Halsschmerzen, Kopfschmerzen und Müdigkeit sowie bei Vorsorgeuntersuchungen und Impfungen."
+  },
+  {
+    "id": "cardiology",
+    "type": "specialty",
+    "specialty": "Cardiology",
+    "title": "Cardiology",
+    "keywords": ["heart", "palpitations", "heartbeat", "racing", "irregular", "blood pressure", "dizziness", "dizzy", "swelling", "ankles", "pulse", "herz", "herzrasen", "herzklopfen", "herzschlag", "unregelmäßig", "blutdruck", "schwindel", "schwindelig", "schwellung", "knöchel", "puls"],
+    "text": "Cardiology covers the heart and blood vessels. See a cardiologist for palpitations, a racing or irregular heartbeat, dizziness when standing, high blood pressure, or swollen ankles.",
+    "text_de": "Die Kardiologie befasst sich mit Herz und Blutgefäßen. Suchen Sie einen Kardiologen auf bei Herzklopfen, Herzrasen oder unregelmäßigem Herzschlag, Schwindel beim Aufstehen, hohem Blutdruck oder geschwollenen Knöcheln."
+  },
+  {
+    "id": "dermatology",
+    "type": "specialty",
+    "specialty": "Dermatology",
+    "title": "Dermatology",
+    "keywords": ["skin", "rash", "itch", "itchy", "itching", "acne", "eczema", "hives", "mole", "moles", "spots", "haut", "ausschlag", "juckreiz", "jucken", "akne", "ekzem", "nesselsucht", "muttermal", "muttermale", "flecken"],
+    "text": "Dermatology covers the skin, hair and nails. See a dermatologist for rashes, itching, acne, eczema, new or changing moles, and persistent skin spots.",
+    "text_de": "Die Dermatologie befasst sich mit Haut, Haaren und Nägeln. Suchen Sie einen Hautarzt auf bei Ausschlägen, Juckreiz, Akne, Ekzemen, neuen oder sich verändernden Muttermalen und hartnäckigen Hautflecken."
+  },
+  {
+    "id": "orthopedics",
+    "type": "specialty",
+    "specialty": "Orthopedics",
+    "title": "Orthopedics",
+    "keywords": ["knee", "hip", "shoulder", "back", "joint", "joints", "bone", "fracture", "sprain", "muscle", "ankle", "sports injury", "knie", "hüfte", "schulter", "rücken", "rückenschmerzen", "gelenk", "gelenke", "knochen", "bruch", "verstauchung", "muskel", "sprunggelenk", "sportverletzung"],
+    "text": "Orthopedics covers bones, joints, muscles and ligaments. See an orthopedist for knee, hip, shoulder or back pain, sprains, and suspected fractures that are not an emergency.",
+    "text_de": "Die Orthopädie befasst sich mit Knochen, Gelenken, Muskeln und Bändern. Suchen Sie einen Orthopäden auf bei Knie-, Hüft-, Schulter- oder Rückenschmerzen, Verstauchungen und Verdacht auf Brüche, die kein Notfall sind."
+  }
+]

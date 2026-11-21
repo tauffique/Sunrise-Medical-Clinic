@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Appointment requests · Sunrise Medical Clinic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Sunrise Medical Clinic · Requests</div>
+    <nav><a href="/">Back to website</a></nav>
+  </header>
+
+  <main class="container">
+    <h2>Appointment requests</h2>
+    <p class="muted">Requests from the website form and the chatbot. Confirm or cancel each one; patients are contacted using the details shown.</p>
+    {% if rows %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Doctor</th><th>When</th><th>Patient</th><th>Contact</th><th>Reason</th><th>Via</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr class="status-{{ r.status }}">
+            <td>{{ r.id }}</td>
+            <td>{{ r.doctor_name }}</td>
+            <td>{{ r.starts_at }}</td>
+            <td>{{ r.patient_name }}</td>
+            <td>{{ r.patient_contact }}</td>
+            <td>{{ r.reason }}</td>
+            <td>{{ r.source }}</td>
+            <td>{{ r.status }}</td>
+            <td class="actions">
+              {% if r.status != 'confirmed' %}
+              <form method="post" action="{{ url_for('admin_set_status', appt_id=r.id) }}">
+                <input type="hidden" name="status" value="confirmed">
+                <button class="btn small" type="submit">Confirm</button>
+              </form>
+              {% endif %}
+              {% if r.status != 'cancelled' %}
+              <form method="post" action="{{ url_for('admin_set_status', appt_id=r.id) }}">
+                <input type="hidden" name="status" value="cancelled">
+                <button class="btn small ghost" type="submit">Cancel</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p>No requests yet.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

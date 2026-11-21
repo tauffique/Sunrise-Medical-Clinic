@@ -1,0 +1,13 @@
+.git
+.env
+.venv
+venv
+__pycache__
+*.pyc
+instance
+*.db
+*.key
+*.eml
+tests/__pycache__
+Dockerfile
+.dockerignore

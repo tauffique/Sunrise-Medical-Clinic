@@ -1,0 +1,30 @@
+[
+  {
+    "id": "dr-meyer",
+    "name": "Dr. Anna Meyer",
+    "specialty": "General Practice",
+    "bio": "Family doctor for adults and children. Handles check-ups, vaccinations, and common illnesses.",
+    "working_days": [0, 1, 2, 3, 4]
+  },
+  {
+    "id": "dr-sharma",
+    "name": "Dr. Ravi Sharma",
+    "specialty": "Cardiology",
+    "bio": "Heart and blood vessel specialist. Focuses on blood pressure, rhythm problems and heart health.",
+    "working_days": [0, 2, 4]
+  },
+  {
+    "id": "dr-fischer",
+    "name": "Dr. Lena Fischer",
+    "specialty": "Dermatology",
+    "bio": "Skin specialist for rashes, eczema, acne, and skin checks.",
+    "working_days": [1, 3]
+  },
+  {
+    "id": "dr-haddad",
+    "name": "Dr. Omar Haddad",
+    "specialty": "Orthopedics",
+    "bio": "Bone, joint and muscle specialist, including sports injuries and back or joint pain.",
+    "working_days": [0, 1, 2, 3, 4]
+  }
+]

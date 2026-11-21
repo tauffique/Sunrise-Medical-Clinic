@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Staff · {{ clinic_name }}{% endblock %}
+{% block nav %}
+  <span class="who">{{ staff.email }} · {{ staff.role }}</span>
+  <form method="post" action="{{ url_for('staff.logout') }}" class="inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="link-btn" type="submit">Sign out</button>
+  </form>
+{% endblock %}
+{% block content %}
+<section class="container wide">
+  <div class="staff-head">
+    <h1>{% if waiting %}Waiting room{% else %}Appointments{% endif %} · {{ day }}</h1>
+    <p class="tabs">
+      <a href="{{ url_for('staff.dashboard', date=day) }}" {% if not waiting %}aria-current="page"{% endif %}>All</a>
+      <a href="{{ url_for('staff.dashboard', date=day, view='waiting') }}" {% if waiting %}aria-current="page"{% endif %}>Waiting room</a>
+      {% if day != today %}<a href="{{ url_for('staff.dashboard', date=today, view='waiting' if waiting else None) }}">Today</a>{% endif %}
+    </p>
+  </div>
+
+  <form method="get" action="{{ url_for('staff.dashboard') }}" class="filters">
+    <label>Date <input type="date" name="date" value="{{ day }}"></label>
+    {% if staff.role == 'reception' %}
+    <label>Doctor
+      <select name="doctor_id">
+        <option value="">All doctors</option>
+        {% for d in doctors %}
+        <option value="{{ d.id }}" {% if d.id == doctor_filter %}selected{% endif %}>{{ d.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    {% endif %}
+    {% if waiting %}<input type="hidden" name="view" value="waiting">{% endif %}
+    <button class="btn small" type="submit">Show</button>
+  </form>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Patient</th>
+          <th>Contact</th>
+          <th>Doctor</th>
+          <th>Status</th>
+          {% if can_see_health %}<th>Reason and questionnaire</th>{% endif %}
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr class="status-{{ r.status }}">
+          <td>{{ r.time }}</td>
+          <td>{{ r.name }}<br><span class="muted">#{{ r.id }} · {{ r.source }}</span></td>
+          <td>{{ r.contact }}</td>
+          <td>{{ r.doctor }}</td>
+          <td>{{ r.status }}</td>
+          {% if can_see_health %}
+          <td>
+            {% if r.reason %}<p><strong>Reason:</strong> {{ r.reason }}</p>{% endif %}
+            {% for key, label in [('conditions', 'Conditions'), ('medications', 'Medications'), ('allergies', 'Allergies'), ('insurance', 'Insurance')] %}
+              {% if r.intake.get(key) %}<p><strong>{{ label }}:</strong> {{ r.intake[key] }}</p>{% endif %}
+            {% endfor %}
+            {% if not r.reason and not r.intake %}<span class="muted">—</span>{% endif %}
+          </td>
+          {% endif %}
+          <td class="actions">
+            {% for value, label in [('confirmed', 'Confirm'), ('done', 'Done'), ('cancelled', 'Cancel')] %}
+              {% if value != r.status and not (value == 'confirmed' and r.status == 'done') %}
+              <form method="post" action="{{ url_for('staff.set_status', appt_id=r.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="status" value="{{ value }}">
+                {% if waiting %}<input type="hidden" name="view" value="waiting">{% endif %}
+                <button class="btn small {% if value == 'cancelled' %}ghost{% endif %}" type="submit">{{ label }}</button>
+              </form>
+              {% endif %}
+            {% endfor %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="{{ 7 if can_see_health else 6 }}" class="muted">No appointments for this day.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if audit %}
+  <h2>Recent activity</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Time (UTC)</th><th>Who</th><th>Action</th><th>Appointment</th></tr></thead>
+      <tbody>
+        {% for a in audit %}
+        <tr><td>{{ a.at }}</td><td>{{ a.actor }}</td><td>{{ a.action }}</td><td>{{ a.appointment_id or '' }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  <p class="muted live-note" id="live-note">Updates appear automatically.</p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='staff.js') }}" defer></script>
+{% endblock %}

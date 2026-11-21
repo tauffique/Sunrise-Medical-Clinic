@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="description" content="{{ clinic_name }}">
+  <title>{% block title %}{{ clinic_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('web.index', lang=lang) }}">{{ clinic_name }}</a>
+    <nav aria-label="Main">
+      {% block nav %}
+      <a href="{{ url_for('web.index', lang=lang) }}#doctors">{{ T('nav_doctors') }}</a>
+      <a href="{{ url_for('web.index', lang=lang) }}#contact">{{ T('nav_contact') }}</a>
+      <button class="link-btn" id="nav-book" type="button">{{ T('nav_book') }}</button>
+      {% endblock %}
+      <span class="lang-switch" aria-label="Language">
+        {% for code in langs %}
+        <a href="{{ url_for('web.set_language', code=code) }}" {% if code == lang %}aria-current="true"{% endif %}>{{ code|upper }}</a>
+        {% endfor %}
+      </span>
+    </nav>
+  </header>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>{{ T('footer_disclaimer') }}</p>
+    <p><a href="{{ url_for('web.privacy') }}">{{ T('link_privacy') }}</a> · <a href="{{ url_for('web.imprint') }}">{{ T('link_imprint') }}</a></p>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

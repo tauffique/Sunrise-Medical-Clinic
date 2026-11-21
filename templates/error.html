@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container narrow">
+  <h1>{{ T('error_title') }}</h1>
+  <p>{{ T(message_key) }}</p>
+  <p><a href="{{ url_for('web.index', lang=lang) }}">{{ T('back_home') }}</a></p>
+</section>
+{% endblock %}

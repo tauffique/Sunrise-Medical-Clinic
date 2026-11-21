@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>{{ T('hero_title') }}</h1>
+  <p>{{ T('hero_text') }}</p>
+  <div class="hero-actions">
+    <button class="btn" id="open-book" type="button">{{ T('btn_book') }}</button>
+    <button class="btn ghost" id="open-chat" type="button">{{ T('btn_chat') }}</button>
+  </div>
+</section>
+
+<section id="doctors" class="container">
+  <h2>{{ T('doctors_heading') }}</h2>
+  <div class="cards">
+    {% for d in doctors %}
+    <article class="card">
+      <h3>{{ d.name }}</h3>
+      <p class="spec">{{ d.specialty }}</p>
+      <p>{{ d.bio }}</p>
+      <p class="muted">{{ T('available') }}: {{ d.days }}</p>
+      <button class="btn small" type="button" data-book="{{ d.id }}">{{ T('book_with', name=d.name) }}</button>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<dialog id="book-dialog" class="dialog" aria-labelledby="book-title">
+  <div class="dialog-head">
+    <h2 id="book-title">{{ T('book_heading') }}</h2>
+    <button type="button" class="close" id="close-book" aria-label="{{ T('close_booking') }}">×</button>
+  </div>
+
+  <label class="doctor-pick">{{ T('doctor_label') }}
+    <select id="doctor-select">
+      {% for d in doctors %}
+      <option value="{{ d.id }}">{{ d.name }} · {{ d.specialty }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="booking-grid">
+    <div id="calendar" class="calendar"></div>
+    <div>
+      <h3 id="slots-title">{{ T('pick_date') }}</h3>
+      <div id="slots" class="slots"></div>
+    </div>
+  </div>
+
+  <form id="book-form" class="form" novalidate>
+    <input type="hidden" name="date">
+    <input type="hidden" name="time">
+    <p id="selection" class="muted">{{ T('selected_none') }}</p>
+    <label>{{ T('name_label') }}
+      <input name="name" autocomplete="name" required>
+    </label>
+    <label>{{ T('contact_label') }}
+      <input name="contact" autocomplete="email" required>
+    </label>
+    <label>{{ T('reason_label') }}
+      <textarea name="reason" rows="2"></textarea>
+    </label>
+    <fieldset class="health">
+      <legend>{{ T('health_heading') }}</legend>
+      <label>{{ T('f_conditions') }}<input name="conditions"></label>
+      <label>{{ T('f_medications') }}<input name="medications"></label>
+      <label>{{ T('f_allergies') }}<input name="allergies"></label>
+      <label>{{ T('f_insurance') }}<input name="insurance"></label>
+    </fieldset>
+    <label class="consent">
+      <input type="checkbox" name="consent" required>
+      <span>{{ T('consent_label', days=retention_days) }} <a href="{{ url_for('web.privacy') }}">{{ T('link_privacy') }}</a></span>
+    </label>
+    <div class="dialog-actions">
+      <button class="btn" type="submit" id="submit-book" disabled>{{ T('submit') }}</button>
+      <button class="btn ghost" type="button" id="cancel-book">{{ T('close') }}</button>
+    </div>
+    <p id="book-msg" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+
+<section id="contact" class="container">
+  <h2>{{ T('contact_heading') }}</h2>
+  <p>{{ clinic_name }} · Hauptstraße 1, 12345 Musterstadt</p>
+  <p class="muted">{{ T('hours_line') }}</p>
+  <p class="muted">{{ T('emergency_line') }}</p>
+</section>
+
+<button id="chat-fab" class="fab" type="button" aria-label="{{ T('open_chat') }}">{{ T('btn_chat') }}</button>
+<div id="chat" class="chat hidden" role="dialog" aria-label="{{ T('chat_title') }}">
+  <div class="chat-head">
+    <span>{{ T('chat_title') }}</span>
+    <span>
+      <button id="chat-reset" type="button" title="{{ T('chat_new') }}" aria-label="{{ T('chat_new') }}">↻</button>
+      <button id="close-chat" type="button" aria-label="{{ T('close_chat') }}">×</button>
+    </span>
+  </div>
+  <div id="chat-log" class="chat-log" aria-live="polite"></div>
+  <form id="chat-form" class="chat-form">
+    <input id="chat-input" placeholder="{{ T('chat_placeholder') }}" autocomplete="off" maxlength="1000">
+    <button class="btn" type="submit">{{ T('send') }}</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="application/json" id="i18n">{{ strings|tojson }}</script>
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+{% endblock %}
