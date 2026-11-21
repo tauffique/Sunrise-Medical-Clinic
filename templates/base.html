@@ -34,5 +34,6 @@
     <p><a href="{{ url_for('web.privacy') }}">{{ T('link_privacy') }}</a> · <a href="{{ url_for('web.imprint') }}">{{ T('link_imprint') }}</a></p>
   </footer>
   {% block scripts %}{% endblock %}
+  <script src="{{ url_for('static', filename='tables-mobile.js') }}" defer></script>
 </body>
 </html>

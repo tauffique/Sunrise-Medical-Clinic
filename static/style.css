@@ -201,3 +201,25 @@ img, svg, video { max-width: 100%; height: auto; }
 @media (max-width: 480px) {
   .staff-user .role-badge { display: none; }
 }
+
+/* ----- tables become cards on phones ----- */
+@media (max-width: 720px) {
+  table thead { display: none; }
+  table, table tbody { display: block; width: 100%; }
+  table tr {
+    display: block; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; margin: 10px 0; padding: 6px 12px;
+  }
+  table td {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); text-align: right;
+  }
+  table tr td:last-child { border-bottom: 0; }
+  table td[data-label]::before {
+    content: attr(data-label); flex: 0 0 38%; text-align: left; font-weight: 600; color: #6b7780;
+  }
+  table td[colspan] { display: block; text-align: left; }
+  table td.actions { flex-wrap: wrap; justify-content: flex-start; }
+  table td.actions form { margin: 0; }
+  .filters { flex-wrap: wrap; }
+}
