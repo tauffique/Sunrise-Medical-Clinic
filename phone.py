@@ -4,7 +4,12 @@ import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from flask import Blueprint, Response, current_app, request
+import os
+import secrets
+
+from flask import Blueprint, Response, current_app, jsonify, request
+from twilio.jwt.access_token import AccessToken
+from twilio.jwt.access_token.grants import VoiceGrant
 
 bp = Blueprint("phone", __name__, url_prefix="/phone")
 log = logging.getLogger(__name__)
@@ -78,3 +83,21 @@ def answer():
         text = ""
     text = _speakable(text or "Sorry, I could not answer that. Please contact the reception.")
     return _twiml(_say(text) + _listen("Anything else I can help with?"))
+
+
+@bp.route("/token", methods=["GET"])
+def browser_token():
+    """Gives the test-call page a short-lived Twilio token. Calls connect to /phone/voice."""
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID", "")
+    api_key = os.environ.get("TWILIO_API_KEY_SID", "")
+    api_secret = os.environ.get("TWILIO_API_KEY_SECRET", "")
+    app_sid = os.environ.get("TWILIO_TWIML_APP_SID", "")
+    if not all((account_sid, api_key, api_secret, app_sid)):
+        return jsonify(error="Browser calling is not configured."), 503
+    token = AccessToken(account_sid, api_key, api_secret,
+                        identity="visitor-" + secrets.token_hex(6), ttl=3600)
+    token.add_grant(VoiceGrant(outgoing_application_sid=app_sid, incoming_allow=False))
+    jwt = token.to_jwt()
+    if isinstance(jwt, bytes):
+        jwt = jwt.decode()
+    return jsonify(token=jwt)

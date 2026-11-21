@@ -229,3 +229,6 @@ img, svg, video { max-width: 100%; height: auto; }
 .voice-btn[aria-pressed="true"] { background: #e6f4f6; }
 .voice-btn.listening { background: #fde8e8; border-color: #e5a3a3; animation: voice-pulse 1.2s infinite; }
 @keyframes voice-pulse { 50% { opacity: .55; } }
+
+/* ----- browser test call button (home page) ----- */
+.phone-test { position: fixed; left: 16px; bottom: 16px; z-index: 30; }
