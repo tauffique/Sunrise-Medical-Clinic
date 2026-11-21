@@ -59,11 +59,13 @@ def create_app(overrides=None, llm=_AUTO):
             role=os.environ.get("BOOTSTRAP_STAFF_ROLE", "reception"),
             doctor_id=os.environ.get("BOOTSTRAP_STAFF_DOCTOR_ID") or None,
         )
-    bootstrap_name = os.environ.get("BOOTSTRAP_STAFF_NAME", "").strip()
-    if bootstrap_email and bootstrap_name:
-        account = store.get_user_by_email(bootstrap_email)
-        if account is not None and account["name"] != bootstrap_name:
-            accounts.set_display_name(store, account["id"], bootstrap_name)
+    for pair in os.environ.get("BOOTSTRAP_STAFF_NAMES", "").split(";"):
+        if "=" not in pair:
+            continue
+        email, name = (part.strip() for part in pair.split("=", 1))
+        account = store.get_user_by_email(email.lower())
+        if account is not None and name and account["name"] != name:
+            accounts.set_display_name(store, account["id"], name)
     vault = Vault.from_config(app.config)
     bus = ChangeBus()
     clinic = Clinic(
