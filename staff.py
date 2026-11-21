@@ -16,6 +16,7 @@ from flask import jsonify
 from werkzeug.security import check_password_hash
 
 from notifications import send_confirmation
+import accounts
 from security import csrf_valid, rate_allowed
 
 bp = Blueprint("staff", __name__, url_prefix="/staff")
@@ -43,6 +44,8 @@ def login_required(view):
         user = _current_user()
         if user is None:
             return redirect(url_for("staff.login"))
+        if user["must_change_password"] and request.endpoint not in ("staff.change_password", "staff.logout"):
+            return redirect(url_for("staff.change_password"))
         g.staff = user
         return view(*args, **kwargs)
 
@@ -162,3 +165,21 @@ def open_requests():
     rows = _ext("store").list_appointments(doctor_filter)
     ids = sorted(row["id"] for row in rows if row["status"] == "requested")
     return jsonify({"ids": ids, "count": len(ids)})
+
+
+@bp.route("/password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    error = None
+    if request.method == "POST":
+        new_password = request.form.get("new_password", "")
+        error = accounts.password_problem(new_password, request.form.get("confirm_password", ""))
+        if error is None:
+            error = accounts.change_password(
+                _ext("store"), g.staff, request.form.get("current_password", ""), new_password,
+            )
+        if error is None:
+            return redirect(url_for("staff.dashboard"))
+    return render_template(
+        "staff_password.html", error=error, forced=bool(g.staff["must_change_password"]),
+    )

@@ -15,6 +15,7 @@ from werkzeug.exceptions import HTTPException
 from chatbot import ChatBot
 from clinic import Clinic
 from config import Config
+import accounts
 from notifications import notify_staff_new_request
 from crypto import Vault
 from i18n import t
@@ -48,6 +49,7 @@ def create_app(overrides=None, llm=_AUTO):
 
     doctors = _load("doctors.json")
     store = Store(app.config["DATABASE"])
+    accounts.ensure_schema(store)
     bootstrap_email = os.environ.get("BOOTSTRAP_STAFF_EMAIL", "").strip().lower()
     bootstrap_hash = os.environ.get("BOOTSTRAP_STAFF_PASSWORD_HASH", "")
     if bootstrap_email and bootstrap_hash and store.get_user_by_email(bootstrap_email) is None:
