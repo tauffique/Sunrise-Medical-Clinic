@@ -154,3 +154,10 @@ tr.status-cancelled td { color: var(--muted); text-decoration: line-through; }
 .actions .btn.small { margin-bottom: 4px; border-radius: 999px; padding: 5px 12px; }
 .live-note { color: var(--muted); font-size: 0.85rem; }
 .alert { box-shadow: 0 2px 8px rgba(164, 73, 60, .12); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; }
+
+/* ----- staff header ----- */
+.staff-user { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.9rem; }
+.staff-user strong { color: var(--ink); font-weight: 600; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: #2fb36b; box-shadow: 0 0 0 3px #dff5e8; display: inline-block; }
+.status-text { font-size: 0.8rem; color: #2a8a52; font-weight: 600; }
+.role-badge { background: #eef4f6; color: var(--brand-dark); border-radius: 999px; padding: 2px 9px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }

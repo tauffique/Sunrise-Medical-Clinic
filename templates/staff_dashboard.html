@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Staff · {{ clinic_name }}{% endblock %}
 {% block nav %}
-  <a href="{{ url_for('staff.change_password') }}">Change password</a>
-  <span class="who">{{ staff.email }} · {{ staff.role }}</span>
+  <span class="staff-user">
+    <span class="status-dot" aria-hidden="true"></span>
+    <span class="status-text">Online</span>
+    <strong>{{ staff.email }}</strong>
+    <span class="role-badge">{{ staff.role }}</span>
+  </span>
+  <a class="btn ghost small" href="{{ url_for('staff.change_password') }}">Change password</a>
   <form method="post" action="{{ url_for('staff.logout') }}" class="inline">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button class="link-btn" type="submit">Sign out</button>
