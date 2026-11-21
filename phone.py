@@ -9,9 +9,10 @@ from zoneinfo import ZoneInfo
 import os
 import secrets
 
-from flask import Blueprint, Response, current_app, jsonify, request
+from flask import Blueprint, Response, abort, current_app, jsonify, request
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
+from twilio.request_validator import RequestValidator
 
 bp = Blueprint("phone", __name__, url_prefix="/phone")
 log = logging.getLogger(__name__)
@@ -169,13 +170,29 @@ def _voice_text(text):
     return _speakable(text)
 
 
+def _twilio_request_ok():
+    """Accepts a call route request only when Twilio signed it with our Auth Token."""
+    token = os.environ.get("TWILIO_AUTH_TOKEN", "")
+    if current_app.config.get("APP_ENV") == "development" and os.environ.get("TWILIO_SKIP_SIGNATURE") == "1":
+        return True
+    if not token:
+        return False
+    url = f"{current_app.config['PUBLIC_BASE_URL'].rstrip('/')}{request.path}"
+    signature = request.headers.get("X-Twilio-Signature", "")
+    return RequestValidator(token).validate(url, request.form.to_dict(), signature)
+
+
 @bp.route("/voice", methods=["POST"])
 def incoming():
+    if not _twilio_request_ok():
+        abort(403)
     return _twiml(_listen(_greeting()))
 
 
 @bp.route("/answer", methods=["POST"])
 def answer():
+    if not _twilio_request_ok():
+        abort(403)
     call_id = request.form.get("CallSid", "")
     speech = (request.form.get("SpeechResult") or "").strip()
     log.info("phone call %s heard: %r", call_id, speech)
