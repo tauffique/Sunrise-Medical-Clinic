@@ -17,7 +17,7 @@ bp = Blueprint("phone", __name__, url_prefix="/phone")
 log = logging.getLogger(__name__)
 
 VOICE = "Polly.Joanna"  # Twilio's built-in English voice, included with Twilio
-MAX_SPOKEN_CHARS = 500
+MAX_SPOKEN_CHARS = 300
 GOODBYE_WORDS = ("goodbye", "bye", "that's all", "thank you, bye")
 
 
@@ -46,7 +46,7 @@ SPEECH_HINTS = "appointment, book, doctor, dermatologist, dermatology, general p
 def _listen(prompt=None):
     inner = _say(prompt) if prompt else ""
     gather = (
-        '<Gather input="speech" language="en-US" speechTimeout="auto" hints="' + SPEECH_HINTS + '" '
+        '<Gather input="speech" language="en-US" speechTimeout="auto" bargeIn="true" hints="' + SPEECH_HINTS + '" '
         'action="/phone/answer" method="POST">' + inner + "</Gather>"
     )
     return gather + _say("I did not hear anything, so I will end the call. Goodbye.") + "<Hangup/>"
@@ -104,17 +104,18 @@ def _voice_text(text):
 
 @bp.route("/voice", methods=["POST"])
 def incoming():
-    return _twiml(_say(_greeting()) + _listen())
+    return _twiml(_listen(_greeting()))
 
 
 @bp.route("/answer", methods=["POST"])
 def answer():
     call_id = request.form.get("CallSid", "")
     speech = (request.form.get("SpeechResult") or "").strip()
+    log.info("phone call %s heard: %r", call_id, speech)
     if not call_id:
         return _twiml(_say("Sorry, something went wrong. Goodbye.") + "<Hangup/>")
     if not speech:
-        return _twiml(_say("Sorry, I did not catch that.") + _listen("Could you say that again?"))
+        return _twiml(_listen("Sorry, I did not catch that. Could you say that again?"))
     if any(word in speech.lower() for word in GOODBYE_WORDS):
         return _twiml(_say("Thank you for calling. Goodbye.") + "<Hangup/>")
     speech = _fix_speech(speech, current_app.extensions["clinic"].doctors)
@@ -125,7 +126,7 @@ def answer():
         log.exception("phone chat failed")
         text = ""
     text = _voice_text(text or "Sorry, I could not answer that. Please contact the reception.")
-    return _twiml(_say(text) + _listen("Anything else I can help with?"))
+    return _twiml(_listen(text))
 
 
 @bp.route("/token", methods=["GET"])
