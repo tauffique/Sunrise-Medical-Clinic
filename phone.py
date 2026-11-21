@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 VOICE = "Polly.Joanna"  # Twilio's built-in English voice, included with Twilio
 MAX_SPOKEN_CHARS = 300
 GOODBYE_WORDS = ("goodbye", "bye", "that's all", "thank you, bye")
+THANKS_WORDS = ("thanks", "thank you", "thx", "danke")
 
 
 def _twiml(body):
@@ -118,6 +119,8 @@ def answer():
         return _twiml(_listen("Sorry, I did not catch that. Could you say that again?"))
     if any(word in speech.lower() for word in GOODBYE_WORDS):
         return _twiml(_say("Thank you for calling. Goodbye.") + "<Hangup/>")
+    if any(word in speech.lower() for word in THANKS_WORDS):
+        return _twiml(_listen("You're welcome. Is there anything else I can help with?"))
     speech = _fix_speech(speech, current_app.extensions["clinic"].doctors)
     try:
         result = current_app.extensions["bot"].reply(call_id, speech, lang="en")
