@@ -161,3 +161,13 @@ tr.status-cancelled td { color: var(--muted); text-decoration: line-through; }
 .status-dot { width: 9px; height: 9px; border-radius: 50%; background: #2fb36b; box-shadow: 0 0 0 3px #dff5e8; display: inline-block; }
 .status-text { font-size: 0.8rem; color: #2a8a52; font-weight: 600; }
 .role-badge { background: #eef4f6; color: var(--brand-dark); border-radius: 999px; padding: 2px 9px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+
+/* ----- staff dropdown menu ----- */
+.staff-menu { position: relative; }
+.staff-menu > summary { list-style: none; cursor: pointer; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); }
+.staff-menu > summary::-webkit-details-marker { display: none; }
+.staff-menu[open] > summary { box-shadow: 0 0 0 3px #e6f4f6; }
+.staff-menu-panel { position: absolute; right: 0; top: calc(100% + 8px); min-width: 210px; display: grid; padding: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, .12); z-index: 20; }
+.staff-menu-panel a, .staff-menu-panel button { display: block; width: 100%; text-align: left; padding: 9px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; }
+.staff-menu-panel a:hover, .staff-menu-panel button:hover { background: #f0f6f8; }
+.staff-menu-panel form { margin: 0; }
