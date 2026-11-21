@@ -48,6 +48,15 @@ def create_app(overrides=None, llm=_AUTO):
 
     doctors = _load("doctors.json")
     store = Store(app.config["DATABASE"])
+    bootstrap_email = os.environ.get("BOOTSTRAP_STAFF_EMAIL", "").strip().lower()
+    bootstrap_hash = os.environ.get("BOOTSTRAP_STAFF_PASSWORD_HASH", "")
+    if bootstrap_email and bootstrap_hash and store.get_user_by_email(bootstrap_email) is None:
+        store.create_user(
+            email=bootstrap_email,
+            password_hash=bootstrap_hash,
+            role=os.environ.get("BOOTSTRAP_STAFF_ROLE", "reception"),
+            doctor_id=os.environ.get("BOOTSTRAP_STAFF_DOCTOR_ID") or None,
+        )
     vault = Vault.from_config(app.config)
     bus = ChangeBus()
     clinic = Clinic(
