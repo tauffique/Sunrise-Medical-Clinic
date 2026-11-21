@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Staff · {{ clinic_name }}{% endblock %}
 {% block nav %}
+  <a href="{{ url_for('staff.change_password') }}">Change password</a>
   <span class="who">{{ staff.email }} · {{ staff.role }}</span>
   <form method="post" action="{{ url_for('staff.logout') }}" class="inline">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
