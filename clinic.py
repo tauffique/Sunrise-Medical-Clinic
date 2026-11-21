@@ -44,6 +44,40 @@ class BookingError(Exception):
         self.params = params
 
 
+_MONTHS = {
+    "jan": 1, "january": 1, "januar": 1, "feb": 2, "february": 2, "februar": 2,
+    "mar": 3, "march": 3, "märz": 3, "maerz": 3, "apr": 4, "april": 4,
+    "may": 5, "mai": 5, "jun": 6, "june": 6, "juni": 6, "jul": 7, "july": 7, "juli": 7,
+    "aug": 8, "august": 8, "sep": 9, "sept": 9, "september": 9,
+    "oct": 10, "october": 10, "oktober": 10, "okt": 10,
+    "nov": 11, "november": 11, "dec": 12, "december": 12, "dez": 12, "dezember": 12,
+}
+
+
+def _month_date(lowered, today):
+    """Reads '22 nov', '22. november', 'november 22' and 'nov 22nd'. Past dates roll to next year."""
+    patterns = (
+        (r"\b(\d{1,2})(?:st|nd|rd|th|\.)?\s+(?:of\s+)?([a-zäöüß]+)\b", True),
+        (r"\b([a-zäöüß]+)\s+(\d{1,2})(?:st|nd|rd|th)?\b", False),
+    )
+    for pattern, day_first in patterns:
+        match = re.search(pattern, lowered)
+        if not match:
+            continue
+        day, name = (match.group(1), match.group(2)) if day_first else (match.group(2), match.group(1))
+        month = _MONTHS.get(name)
+        if month is None:
+            continue
+        try:
+            candidate = date(today.year, month, int(day))
+            if candidate < today:
+                candidate = date(today.year + 1, month, int(day))
+        except ValueError:
+            return None
+        return candidate
+    return None
+
+
 def parse_day(text, today=None):
     """Accept 'YYYY-MM-DD', 'today'/'heute', 'tomorrow'/'morgen' or a weekday name.
 
@@ -58,6 +92,9 @@ def parse_day(text, today=None):
         except ValueError:
             return None
     lowered = text.lower()
+    month_day = _month_date(lowered, today)
+    if month_day:
+        return month_day
     if re.search(r"\btomorrow\b|\bmorgen\b", lowered):
         return today + timedelta(days=1)
     if re.search(r"\btoday\b|\bheute\b", lowered):
