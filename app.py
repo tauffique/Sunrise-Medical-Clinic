@@ -66,6 +66,11 @@ def create_app(overrides=None, llm=_AUTO):
         account = store.get_user_by_email(email.lower())
         if account is not None and name and account["name"] != name:
             accounts.set_display_name(store, account["id"], name)
+    for admin_email in os.environ.get("BOOTSTRAP_STAFF_ADMINS", "").split(","):
+        admin_email = admin_email.strip().lower()
+        account = store.get_user_by_email(admin_email) if admin_email else None
+        if account is not None and not account["is_admin"]:
+            store._write("UPDATE users SET is_admin = 1 WHERE id = ?", (account["id"],))
     vault = Vault.from_config(app.config)
     bus = ChangeBus()
     clinic = Clinic(

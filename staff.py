@@ -183,3 +183,46 @@ def change_password():
     return render_template(
         "staff_password.html", error=error, forced=bool(g.staff["must_change_password"]),
     )
+
+
+@bp.route("/accounts", methods=["GET", "POST"])
+@login_required
+def accounts_admin():
+    if not g.staff["is_admin"]:
+        abort(403)
+    store = _ext("store")
+    error = None
+    new_account = None
+    if request.method == "POST":
+        email = request.form.get("email", "")
+        temporary, error = accounts.create_staff_account(
+            store,
+            email=email,
+            role=request.form.get("role", ""),
+            doctor_id=request.form.get("doctor_id", ""),
+            name=request.form.get("name", ""),
+            actor=g.staff["email"],
+        )
+        if error is None:
+            new_account = {"email": email.strip().lower(), "password": temporary, "reset": False}
+    return render_template(
+        "staff_accounts.html",
+        staff_list=accounts.list_staff(store), error=error, new_account=new_account,
+    )
+
+
+@bp.route("/accounts/<int:user_id>/reset", methods=["POST"])
+@login_required
+def reset_account(user_id):
+    if not g.staff["is_admin"]:
+        abort(403)
+    store = _ext("store")
+    target = store.get_user(user_id)
+    if target is None:
+        abort(404)
+    temporary = accounts.reset_temporary_password(store, target, g.staff["email"])
+    return render_template(
+        "staff_accounts.html",
+        staff_list=accounts.list_staff(store), error=None,
+        new_account={"email": target["email"], "password": temporary, "reset": True},
+    )

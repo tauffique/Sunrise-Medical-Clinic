@@ -1,8 +1,14 @@
-"""Staff accounts: display names, password changes and forced password updates on first sign-in."""
+"""Staff accounts: names, admin rights, creating accounts, password changes and resets."""
+import re
+import secrets
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 MIN_PASSWORD_LENGTH = 12
 MAX_NAME_LENGTH = 80
+ROLES = ("reception", "doctor")
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+DOCTOR_ID_RE = re.compile(r"^[a-z0-9-]{1,40}$")
 
 
 def ensure_schema(store):
@@ -12,6 +18,8 @@ def ensure_schema(store):
         store._write("ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0")
     if "name" not in columns:
         store._write("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT ''")
+    if "is_admin" not in columns:
+        store._write("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
 
 
 def clean_name(raw):
@@ -52,3 +60,52 @@ def change_password(store, user, current_password, new_password):
     )
     store.audit(user["email"], "password-changed")
     return None
+
+
+def generate_temporary_password():
+    return secrets.token_urlsafe(9)
+
+
+def create_staff_account(store, email, role, doctor_id, name, actor):
+    """Returns (temporary_password, None) on success or (None, error message)."""
+    email = (email or "").strip().lower()
+    doctor_id = (doctor_id or "").strip() or None
+    name = clean_name(name)
+    if not EMAIL_RE.match(email):
+        return None, "Enter a valid email address."
+    if name is None:
+        return None, f"Enter a name of up to {MAX_NAME_LENGTH} characters."
+    if role not in ROLES:
+        return None, "Choose a valid role."
+    if role == "doctor" and not (doctor_id and DOCTOR_ID_RE.match(doctor_id)):
+        return None, "Doctor accounts need a doctor ID such as dr-fischer."
+    if role == "reception":
+        doctor_id = None
+    if store.get_user_by_email(email) is not None:
+        return None, "An account with this email already exists."
+    temporary = generate_temporary_password()
+    store._write(
+        "INSERT INTO users (email, password_hash, role, doctor_id, name, must_change_password) "
+        "VALUES (?, ?, ?, ?, ?, 1)",
+        (email, generate_password_hash(temporary), role, doctor_id, name),
+    )
+    store.audit(actor, f"account-created:{email}")
+    return temporary, None
+
+
+def reset_temporary_password(store, user, actor):
+    """Gives the account a new temporary password and requires a change at next sign-in."""
+    temporary = generate_temporary_password()
+    store._write(
+        "UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?",
+        (generate_password_hash(temporary), user["id"]),
+    )
+    store.audit(actor, f"password-reset:{user['email']}")
+    return temporary
+
+
+def list_staff(store):
+    return store._query(
+        "SELECT id, email, role, doctor_id, name, active, must_change_password "
+        "FROM users ORDER BY role, email"
+    )

@@ -10,6 +10,7 @@
     </summary>
     <div class="staff-menu-panel">
       <a href="{{ url_for('staff.change_password') }}">Change password</a>
+      {% if staff.is_admin %}<a href="{{ url_for('staff.accounts_admin') }}">Manage accounts</a>{% endif %}
       <form method="post" action="{{ url_for('staff.logout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">Sign out</button>
