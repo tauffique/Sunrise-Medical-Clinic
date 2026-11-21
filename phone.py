@@ -1,4 +1,5 @@
 """Phone line: Twilio calls the clinic and the chatbot answers by voice (Phase 1, English)."""
+import difflib
 import html
 import logging
 from datetime import datetime
@@ -60,6 +61,20 @@ def _speakable(text):
     return cut[:end + 1] if end > 0 else cut.rsplit(" ", 1)[0]
 
 
+def _fix_speech(speech, doctors):
+    """Corrects words the recognizer misheard, if they are very close to a known doctor name, specialty, or medical term."""
+    vocab = {"dermatologist", "cardiologist", "orthopedist", "appointment", "doctor"}
+    for doctor in doctors:
+        vocab.add(doctor["specialty"].lower())
+        vocab.update(part.lower() for part in doctor["name"].replace(".", " ").split())
+    words = []
+    for word in speech.split():
+        core = word.strip(".,?!").lower()
+        match = difflib.get_close_matches(core, vocab, n=1, cutoff=0.8) if core and core not in vocab else []
+        words.append(match[0] if match else word)
+    return " ".join(words)
+
+
 def _voice_text(text):
     """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
     lines = text.splitlines()
@@ -85,6 +100,7 @@ def answer():
         return _twiml(_say("Sorry, I did not catch that.") + _listen("Could you say that again?"))
     if any(word in speech.lower() for word in GOODBYE_WORDS):
         return _twiml(_say("Thank you for calling. Goodbye.") + "<Hangup/>")
+    speech = _fix_speech(speech, current_app.extensions["clinic"].doctors)
     try:
         result = current_app.extensions["bot"].reply(call_id, speech, lang="en")
         text = result["reply"] if isinstance(result, dict) else getattr(result, "reply", "")
