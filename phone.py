@@ -33,10 +33,13 @@ def _greeting():
     )
 
 
+SPEECH_HINTS = "appointment, book, doctor, dermatologist, dermatology, general practice, Anna Meyer, Lena Fischer, vaccination, insurance, opening hours, yes, no, goodbye"
+
+
 def _listen(prompt=None):
     inner = _say(prompt) if prompt else ""
     gather = (
-        '<Gather input="speech" language="en-US" speechTimeout="auto" '
+        '<Gather input="speech" language="en-US" speechTimeout="auto" hints="' + SPEECH_HINTS + '" '
         'action="/phone/answer" method="POST">' + inner + "</Gather>"
     )
     return gather + _say("I did not hear anything, so I will end the call. Goodbye.") + "<Hangup/>"

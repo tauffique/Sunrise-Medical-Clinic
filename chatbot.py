@@ -32,6 +32,7 @@ MANAGE_RE = re.compile(
 ABORT_RE = re.compile(r"^\s*(cancel|stop|start over|reset|abbrechen)\b", re.I)
 MANAGE_ABORT_RE = re.compile(r"^\s*(stop|start over|reset|abbrechen)\b", re.I)
 YES_RE = re.compile(r"^\s*(y|yes|yeah|yep|sure|ok|okay|confirm|please|ja|j|klar|gerne)\b", re.I)
+NO_RE = re.compile(r"^\s*(n|no|nope|nah|not now|nein|nee|lieber nicht)\b", re.I)
 GREET_RE = re.compile(r"^\s*(hi|hello|hey|hallo|servus|guten (morgen|tag|abend))\b[\s!.?]*$", re.I)
 CLOSE_RE = re.compile(
     r"^\s*(no|nope|nein|no thanks|no thank you|nein danke|that'?s all|that'?s it|bye|goodbye|tschüss|ciao|thanks|thank you|danke|vielen dank)\b[\s!.?]*$",
