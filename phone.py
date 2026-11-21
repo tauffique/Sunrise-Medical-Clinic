@@ -92,8 +92,15 @@ def browser_token():
     api_key = os.environ.get("TWILIO_API_KEY_SID", "")
     api_secret = os.environ.get("TWILIO_API_KEY_SECRET", "")
     app_sid = os.environ.get("TWILIO_TWIML_APP_SID", "")
-    if not all((account_sid, api_key, api_secret, app_sid)):
-        return jsonify(error="Browser calling is not configured."), 503
+    settings = {
+        "TWILIO_ACCOUNT_SID": account_sid,
+        "TWILIO_API_KEY_SID": api_key,
+        "TWILIO_API_KEY_SECRET": api_secret,
+        "TWILIO_TWIML_APP_SID": app_sid,
+    }
+    missing = [name for name, value in settings.items() if not value]
+    if missing:
+        return jsonify(error="Browser calling is not configured.", missing=missing), 503
     token = AccessToken(account_sid, api_key, api_secret,
                         identity="visitor-" + secrets.token_hex(6), ttl=3600)
     token.add_grant(VoiceGrant(outgoing_application_sid=app_sid, incoming_allow=False))
