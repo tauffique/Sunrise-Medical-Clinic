@@ -21,7 +21,7 @@
     return new Promise(function (resolve, reject) {
       var s = document.createElement("script");
       // Twilio Voice JavaScript SDK (UMD build). If this 404s, check the current path in Twilio's docs.
-      s.src = "https://cdn.jsdelivr.net/npm/@twilio/voice-sdk@2/dist/twilio.min.js";
+      s.src = "/static/twilio-voice.min.js";
       s.onload = resolve;
       s.onerror = function () { reject(new Error("sdk")); };
       document.head.appendChild(s);
