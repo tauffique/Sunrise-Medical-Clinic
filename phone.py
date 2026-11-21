@@ -157,7 +157,8 @@ def _spoken_dates(text):
 
 def _voice_text(text):
     """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
-    text = text.replace("Reply '", "Say '").replace("Type '", "Say '")
+    text = (text.replace("Reply '", "Say '").replace("Type '", "Say '")
+            .replace("Please type '", "Please say '").replace("type '", "say '"))
     text = _short_times(text)
     text = _spoken_dates(text)
     text = _voice_prompts(text)
