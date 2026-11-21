@@ -60,6 +60,16 @@ def _speakable(text):
     return cut[:end + 1] if end > 0 else cut.rsplit(" ", 1)[0]
 
 
+def _voice_text(text):
+    """Keeps phone replies short: long doctor lists become a request for a name or specialty."""
+    lines = text.splitlines()
+    bullets = [line for line in lines if line.strip().startswith("•")]
+    if len(bullets) > 3:
+        kept = " ".join(line for line in lines if not line.strip().startswith("•"))
+        return _speakable(kept + " Please say the name of the doctor you want, or the medical area, such as dermatology.")
+    return _speakable(text)
+
+
 @bp.route("/voice", methods=["POST"])
 def incoming():
     return _twiml(_say(_greeting()) + _listen())
@@ -81,7 +91,7 @@ def answer():
     except Exception:
         log.exception("phone chat failed")
         text = ""
-    text = _speakable(text or "Sorry, I could not answer that. Please contact the reception.")
+    text = _voice_text(text or "Sorry, I could not answer that. Please contact the reception.")
     return _twiml(_say(text) + _listen("Anything else I can help with?"))
 
 
