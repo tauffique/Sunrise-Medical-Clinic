@@ -8,7 +8,7 @@ from flask import current_app, request, session
 
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
-    "connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'"
+    "connect-src 'self' https://*.twilio.com wss://*.twilio.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'"
 )
 
 
